@@ -18,6 +18,7 @@ function Sidebar() {
         <Link to="/topics" style={{ color: "white" }}>Topics</Link>
         <Link to="/questions" style={{ color: "white" }}>Questions</Link>
         <Link to="/mocks" style={{ color: "white" }}>Mocks</Link>
+        <Link to="/sets" style={{ color: "white" }}>Sets</Link>
       </nav>
     </div>
   );

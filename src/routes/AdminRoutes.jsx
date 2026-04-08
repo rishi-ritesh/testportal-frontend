@@ -10,6 +10,9 @@ import Header from "../components/layout/Header";
 import { Navigate } from "react-router-dom";
 import Login from "../pages/Login";
 
+import Sets from "../pages/Sets";
+import SetBuilder from "../pages/SetBuilder";
+
 const isAuthenticated = () => {
   return !!localStorage.getItem("token");
 };
@@ -29,6 +32,9 @@ function AdminRoutes() {
             <Route path="/topics" element={<Topics />} />
             <Route path="/questions" element={<Questions />} />
             <Route path="/mocks" element={<Mocks />} />
+            <Route path="/sets" element={<Sets />} />
+            <Route path="/sets/:id" element={<SetBuilder />} />
+
             <Route path="/login" element={<Login />} />
             <Route path="/*" element={
               isAuthenticated() ? (

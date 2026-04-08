@@ -24,7 +24,14 @@ function Subjects() {
 
     try {
       setLoading(true);
-      await createSubject({ name });
+
+      const slug = name.toLowerCase().replace(/\s+/g, "-");
+
+      await createSubject({
+        name,
+        slug
+      });
+
       setName("");
       fetchSubjects();
     } catch (err) {
@@ -34,6 +41,7 @@ function Subjects() {
       setLoading(false);
     }
   };
+
 
   const handleDelete = async (id) => {
     const confirmCascade = window.confirm(

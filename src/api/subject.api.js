@@ -2,7 +2,7 @@ import API from "./axios";
 
 export const getSubjects = () => API.get("api/admin/subjects");
 
-export const createSubject = (data) => API.post("api/admin/subjects", data);
+export const createSubject = (data) => API.post("api/admin/subject", data);
 
 // export const deleteSubject = (id) => API.delete(`/subjects/${id}`);
 
