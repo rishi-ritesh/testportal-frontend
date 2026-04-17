@@ -162,7 +162,7 @@ function SetBuilder() {
     for (const section of setData.sections) {
       for (const subject of section.subjects) {
         const total = subject.questions?.length || 0;
-        const max = subject.maxQuestions || 0;
+        const max = subject.maxQuestions;
 
         if (max > 0 && total !== max) {
           errors.push(
@@ -285,6 +285,7 @@ function SetBuilder() {
 
                 <input
                   type="number"
+                  min="1"
                   placeholder="Max Questions"
                   value={maxQuestionsInput}
                   onChange={(e) => setMaxQuestionsInput(e.target.value)}
@@ -314,7 +315,7 @@ function SetBuilder() {
             {section.subjects?.map((subject, subjectIndex) => {
 
               const currentCount = subject.questions?.length || 0;
-              const max = subject.maxQuestions || 0;
+              const max = subject.maxQuestions;
               const limitReached =
                 max > 0 && currentCount >= max;
 
@@ -357,6 +358,10 @@ function SetBuilder() {
                         }}
                       >
                         <span style={{ flex: 1 }}>
+                          <strong style={{ color: "#2563eb" }}>
+                            {q.questionId?.questionCode}
+                          </strong>
+                          {" — "}
                           {q.questionId?.question?.en}
                         </span>
 

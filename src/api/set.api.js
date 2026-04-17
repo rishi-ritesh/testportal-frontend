@@ -42,3 +42,7 @@ export const addSubjectToSection = (setId, sectionName, data) => {
     data
   );
 };
+
+export const searchQuestionByCode = (params) => {
+  return API.get("/api/admin/questions/search-by-code", { params });
+};
