@@ -1,24 +1,67 @@
-import { Link } from "react-router-dom";
+import { NavLink } from "react-router-dom";
 
 function Sidebar() {
+  const linkStyle = {
+    display: "flex",
+    alignItems: "center",
+    padding: "10px 12px",
+    borderRadius: "6px",
+    textDecoration: "none",
+    color: "#d1d5db",
+    fontSize: "14px"
+  };
+
+  const activeStyle = {
+    backgroundColor: "#374151",
+    color: "#fff"
+  };
+
   return (
     <div
       style={{
-        width: "220px",
-        background: "#1f2937",
+        width: "240px",
+        background: "#111827",
         color: "white",
-        padding: "20px"
+        padding: "20px",
+        display: "flex",
+        flexDirection: "column"
       }}
     >
-      <h2>Admin Panel</h2>
+      {/* Logo / Title */}
+      <h2 style={{ fontSize: "18px", fontWeight: "600" }}>
+        TestPortal Admin
+      </h2>
 
-      <nav style={{ marginTop: "20px", display: "flex", flexDirection: "column", gap: "10px" }}>
-        <Link to="/" style={{ color: "white" }}>Dashboard</Link>
-        <Link to="/subjects" style={{ color: "white" }}>Subjects</Link>
-        <Link to="/topics" style={{ color: "white" }}>Topics</Link>
-        <Link to="/questions" style={{ color: "white" }}>Questions</Link>
-        <Link to="/mocks" style={{ color: "white" }}>Mocks</Link>
-        <Link to="/sets" style={{ color: "white" }}>Sets</Link>
+      {/* Navigation */}
+      <nav
+        style={{
+          marginTop: "30px",
+          display: "flex",
+          flexDirection: "column",
+          gap: "6px"
+        }}
+      >
+        {[
+          { name: "Dashboard", path: "/" },
+          { name: "Subjects", path: "/subjects" },
+          { name: "Topics", path: "/topics" },
+          { name: "Questions", path: "/questions" },
+          { name: "Sets", path: "/sets" },
+          { name: "Packages", path: "/packages" },
+          { name: "Guide", path: "/guide" }
+        ].map((item) => (
+          <NavLink
+            key={item.path}
+            to={item.path}
+            style={({ isActive }) =>
+              isActive
+                ? { ...linkStyle, ...activeStyle }
+                : linkStyle
+            }
+          >
+            {item.name}
+          </NavLink>
+        ))}
       </nav>
     </div>
   );

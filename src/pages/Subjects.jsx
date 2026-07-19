@@ -36,7 +36,7 @@ function Subjects() {
       fetchSubjects();
     } catch (err) {
       console.error("Create failed", err);
-      alert("Failed to create subject");
+      alert(err.response?.data?.message || "Failed to create subject");
     } finally {
       setLoading(false);
     }

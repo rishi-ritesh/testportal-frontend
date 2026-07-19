@@ -46,3 +46,16 @@ export const addSubjectToSection = (setId, sectionName, data) => {
 export const searchQuestionByCode = (params) => {
   return API.get("/api/admin/questions/search-by-code", { params });
 };
+
+export const bulkAddQuestionsToSubject = (
+  setId,
+  sectionName,
+  subjectId,
+  questions,
+  force = false
+) => {
+  return API.post(
+    `/api/admin/set/${setId}/section/${sectionName}/subject/${subjectId}/questions/bulk`,
+    { questions, force }
+  );
+};

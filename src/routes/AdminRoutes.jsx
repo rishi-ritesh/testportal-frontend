@@ -3,7 +3,6 @@ import Dashboard from "../pages/Dashboard";
 import Subjects from "../pages/Subjects";
 import Topics from "../pages/Topics";
 import Questions from "../pages/Questions";
-import Mocks from "../pages/Mocks";
 
 import Sidebar from "../components/layout/Sidebar";
 import Header from "../components/layout/Header";
@@ -12,6 +11,10 @@ import Login from "../pages/Login";
 
 import Sets from "../pages/Sets";
 import SetBuilder from "../pages/SetBuilder";
+import Packages from "../pages/Packages";
+import PackageBuilder from "../pages/PackageBuilder";
+import Guide from "../pages/Guide";
+import NotFound from "../pages/NotFound";
 
 const isAuthenticated = () => {
   return !!localStorage.getItem("token");
@@ -31,14 +34,16 @@ function AdminRoutes() {
             <Route path="/subjects" element={<Subjects />} />
             <Route path="/topics" element={<Topics />} />
             <Route path="/questions" element={<Questions />} />
-            <Route path="/mocks" element={<Mocks />} />
             <Route path="/sets" element={<Sets />} />
             <Route path="/sets/:id" element={<SetBuilder />} />
+            <Route path="/packages" element={<Packages />} />
+            <Route path="/packages/:id" element={<PackageBuilder />} />
+            <Route path="/guide" element={<Guide />} />
 
             <Route path="/login" element={<Login />} />
             <Route path="/*" element={
               isAuthenticated() ? (
-                <Dashboard />
+                <NotFound />
               ) : (
                 <Navigate to="/login" />
               )

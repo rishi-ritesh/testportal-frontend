@@ -58,7 +58,7 @@ function Topics() {
       setSlug("");
       fetchTopics(selectedSubject);
     } catch (err) {
-      alert("Failed to create topic");
+      alert(err.response?.data?.message || "Failed to create topic");
     }
   };
 
