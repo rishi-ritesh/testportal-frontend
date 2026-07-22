@@ -14,6 +14,7 @@ import SetBuilder from "../pages/SetBuilder";
 import Packages from "../pages/Packages";
 import PackageBuilder from "../pages/PackageBuilder";
 import Guide from "../pages/Guide";
+import Students from "../pages/Students";
 import NotFound from "../pages/NotFound";
 
 const isAuthenticated = () => {
@@ -38,6 +39,7 @@ function AdminRoutes() {
             <Route path="/sets/:id" element={<SetBuilder />} />
             <Route path="/packages" element={<Packages />} />
             <Route path="/packages/:id" element={<PackageBuilder />} />
+            <Route path="/students" element={<Students />} />
             <Route path="/guide" element={<Guide />} />
 
             <Route path="/login" element={<Login />} />

@@ -18,6 +18,7 @@ function Header() {
     if (path.includes("questions")) return "Questions";
     if (path.includes("packages")) return "Packages";
     if (path.includes("sets")) return "Sets";
+    if (path.includes("students")) return "Students";
     if (path.includes("guide")) return "Guide";
 
     return "Admin";

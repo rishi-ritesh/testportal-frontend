@@ -48,6 +48,7 @@ function Sidebar() {
           { name: "Questions", path: "/questions" },
           { name: "Sets", path: "/sets" },
           { name: "Packages", path: "/packages" },
+          { name: "Students", path: "/students" },
           { name: "Guide", path: "/guide" }
         ].map((item) => (
           <NavLink
