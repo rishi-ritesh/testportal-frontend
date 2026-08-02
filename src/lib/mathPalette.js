@@ -1,0 +1,201 @@
+// Symbol palette shown in the formula builder.
+//
+// Each item is [ whatTheButtonShows, whatGetsWritten, tooltip ].
+// "{}" inside "whatGetsWritten" marks where the cursor should land after
+// clicking, and is also where highlighted text gets wrapped.
+//
+// To add a new symbol, just add a line — nothing else needs changing.
+
+const PALETTE = {
+  Basic: {
+    tip: "Everyday arithmetic and comparison signs.",
+    items: [
+      ["+", "+", "Plus"],
+      ["-", "-", "Minus"],
+      ["\\times", "\\times", "Multiply"],
+      ["\\div", "\\div", "Divide"],
+      ["\\pm", "\\pm", "Plus or minus"],
+      ["\\mp", "\\mp", "Minus or plus"],
+      ["=", "=", "Equals"],
+      ["\\neq", "\\neq", "Not equal"],
+      ["\\approx", "\\approx", "Approximately"],
+      ["\\leq", "\\leq", "Less or equal"],
+      ["\\geq", "\\geq", "Greater or equal"],
+      ["<", "<", "Less than"],
+      [">", ">", "Greater than"],
+      ["\\propto", "\\propto", "Proportional to"],
+      ["\\infty", "\\infty", "Infinity"],
+      ["\\%", "\\%", "Percent"],
+      ["^{\\circ}", "^{\\circ}", "Degree"],
+      ["\\therefore", "\\therefore", "Therefore"],
+      ["\\because", "\\because", "Because"],
+      ["\\cdot", "\\cdot", "Dot multiply"],
+    ],
+  },
+
+  "Fractions & roots": {
+    tip: "Click, then fill the empty boxes. Highlight something first and it gets wrapped.",
+    items: [
+      ["\\dfrac{a}{b}", "\\dfrac{}{}", "Fraction"],
+      ["\\sqrt{x}", "\\sqrt{}", "Square root"],
+      ["\\sqrt[3]{x}", "\\sqrt[3]{}", "Cube root"],
+      ["\\sqrt[n]{x}", "\\sqrt[]{}", "Any root"],
+      ["\\sqrt{\\dfrac{a}{b}}", "\\sqrt{\\dfrac{}{}}", "Root over a fraction"],
+      ["x^{2}", "^{2}", "Squared"],
+      ["x^{3}", "^{3}", "Cubed"],
+      ["x^{n}", "^{}", "Power"],
+      ["x_{n}", "_{}", "Subscript"],
+      ["|x|", "\\left|\\right|", "Absolute value"],
+      ["\\left(\\right)", "\\left(\\right)", "Brackets"],
+      ["\\left[\\right]", "\\left[\\right]", "Square brackets"],
+      ["\\overline{AB}", "\\overline{}", "Bar on top"],
+      ["\\dfrac{a}{b}\\%", "\\dfrac{}{}\\times 100\\%", "Percentage of"],
+    ],
+  },
+
+  Greek: {
+    tip: "Small letters and capitals used in maths, physics and chemistry.",
+    items: [
+      ["\\alpha", "\\alpha", "alpha"],
+      ["\\beta", "\\beta", "beta"],
+      ["\\gamma", "\\gamma", "gamma"],
+      ["\\delta", "\\delta", "delta"],
+      ["\\Delta", "\\Delta", "Capital delta / change / heat"],
+      ["\\epsilon", "\\epsilon", "epsilon"],
+      ["\\varepsilon", "\\varepsilon", "epsilon (curly)"],
+      ["\\theta", "\\theta", "theta"],
+      ["\\lambda", "\\lambda", "lambda"],
+      ["\\mu", "\\mu", "mu"],
+      ["\\pi", "\\pi", "pi"],
+      ["\\rho", "\\rho", "rho"],
+      ["\\sigma", "\\sigma", "sigma"],
+      ["\\Sigma", "\\Sigma", "Capital sigma"],
+      ["\\phi", "\\phi", "phi"],
+      ["\\omega", "\\omega", "omega"],
+      ["\\Omega", "\\Omega", "Capital omega / ohm"],
+      ["\\tau", "\\tau", "tau"],
+      ["\\eta", "\\eta", "eta"],
+      ["\\psi", "\\psi", "psi"],
+    ],
+  },
+
+  "Maths tools": {
+    tip: "Sums, integrals, trigonometry and matrices.",
+    items: [
+      ["\\sum_{i=1}^{n}", "\\sum_{}^{}", "Summation"],
+      ["\\prod_{i=1}^{n}", "\\prod_{}^{}", "Product"],
+      ["\\int_{a}^{b}", "\\int_{}^{}", "Integral"],
+      ["\\lim_{x \\to 0}", "\\lim_{ \\to }", "Limit"],
+      ["\\log", "\\log", "log"],
+      ["\\ln", "\\ln", "natural log"],
+      ["\\sin", "\\sin", "sin"],
+      ["\\cos", "\\cos", "cos"],
+      ["\\tan", "\\tan", "tan"],
+      ["\\cot", "\\cot", "cot"],
+      ["\\sec", "\\sec", "sec"],
+      ["\\csc", "\\csc", "cosec"],
+      [
+        "\\begin{bmatrix}a&b\\\\c&d\\end{bmatrix}",
+        "\\begin{bmatrix} & \\\\ & \\end{bmatrix}",
+        "2x2 matrix",
+      ],
+      ["f(x)", "f()", "Function"],
+      ["\\dfrac{dy}{dx}", "\\dfrac{d}{d}", "Derivative"],
+    ],
+  },
+
+  Arrows: {
+    tip: "Plain arrows. For reaction arrows with heat or a catalyst, use the Chemistry tab.",
+    items: [
+      ["\\rightarrow", "\\rightarrow", "Right arrow"],
+      ["\\leftarrow", "\\leftarrow", "Left arrow"],
+      ["\\leftrightarrow", "\\leftrightarrow", "Both ways"],
+      ["\\Rightarrow", "\\Rightarrow", "Implies"],
+      ["\\Leftrightarrow", "\\Leftrightarrow", "If and only if"],
+      ["\\uparrow", "\\uparrow", "Up"],
+      ["\\downarrow", "\\downarrow", "Down"],
+      ["\\rightleftharpoons", "\\rightleftharpoons", "Reversible"],
+      ["\\longrightarrow", "\\longrightarrow", "Long arrow"],
+      ["\\mapsto", "\\mapsto", "Maps to"],
+      ["\\vec{v}", "\\vec{}", "Vector"],
+      ["\\overrightarrow{AB}", "\\overrightarrow{}", "Arrow over letters"],
+    ],
+  },
+
+  Chemistry: {
+    tip: "Start with the reaction box, then click symbols to fill it. Formulas auto-format: type H2SO4 and it prints correctly.",
+    items: [
+      ["\\ce{H2SO4}", "\\ce{}", "Chemical formula box"],
+      ["\\ce{A -> B}", "\\ce{ -> }", "Reaction arrow"],
+      ["\\ce{A ->[\\Delta] B}", "\\ce{ ->[\\Delta] }", "Arrow with heat"],
+      ["\\ce{A ->[\\ce{cat}] B}", "\\ce{ ->[\\ce{}] }", "Arrow with catalyst above"],
+      ["\\ce{A <=>[x][y] B}", "\\ce{ <=>[][] }", "Reversible, above and below"],
+      ["\\ce{A <=> B}", "\\ce{ <=> }", "Reversible arrow"],
+      ["\\ce{AgCl v}", "v", "Precipitate (down)"],
+      ["\\ce{CO2 ^}", "^", "Gas released (up)"],
+      ["\\ce{(aq)}", "(aq)", "aqueous"],
+      ["\\ce{(s)}", "(s)", "solid"],
+      ["\\ce{(l)}", "(l)", "liquid"],
+      ["\\ce{(g)}", "(g)", "gas"],
+      ["\\ce{SO4^2-}", "^2-", "Charge 2 minus"],
+      ["\\ce{Na^+}", "^+", "Charge plus"],
+      ["\\ce{^{14}_{6}C}", "^{}_{}", "Mass and atomic number"],
+      ["\\ce{H2O}", "H2O", "Water"],
+    ],
+  },
+
+  Geometry: {
+    tip: "Angles, shapes and relations.",
+    items: [
+      ["\\angle", "\\angle", "Angle"],
+      ["\\triangle", "\\triangle", "Triangle"],
+      ["\\perp", "\\perp", "Perpendicular"],
+      ["\\parallel", "\\parallel", "Parallel"],
+      ["\\cong", "\\cong", "Congruent"],
+      ["\\sim", "\\sim", "Similar"],
+      ["^{\\circ}", "^{\\circ}", "Degree"],
+      ["\\pi", "\\pi", "pi"],
+      ["\\square", "\\square", "Square"],
+      ["\\odot", "\\odot", "Circle"],
+      ["\\overline{AB}", "\\overline{}", "Line segment"],
+      ["\\widehat{ABC}", "\\widehat{}", "Angle name"],
+    ],
+  },
+
+  "Sets & logic": {
+    tip: "Used in reasoning and set theory questions.",
+    items: [
+      ["\\in", "\\in", "Belongs to"],
+      ["\\notin", "\\notin", "Does not belong"],
+      ["\\subset", "\\subset", "Subset"],
+      ["\\supset", "\\supset", "Superset"],
+      ["\\cup", "\\cup", "Union"],
+      ["\\cap", "\\cap", "Intersection"],
+      ["\\emptyset", "\\emptyset", "Empty set"],
+      ["\\forall", "\\forall", "For all"],
+      ["\\exists", "\\exists", "There exists"],
+      ["\\neg", "\\neg", "Not"],
+      ["\\land", "\\land", "And"],
+      ["\\lor", "\\lor", "Or"],
+      ["\\mathbb{N}", "\\mathbb{N}", "Natural numbers"],
+      ["\\mathbb{R}", "\\mathbb{R}", "Real numbers"],
+    ],
+  },
+
+  Words: {
+    tip: "Use this whenever Hindi or English words go inside a formula — it keeps the spacing correct.",
+    items: [
+      ["\\text{शब्द}", "\\text{}", "Words inside a formula"],
+      ["\\text{का मान}", "\\text{का मान}", "का मान"],
+      ["\\text{value of }", "\\text{value of }", "value of"],
+      ["\\ ", "\\ ", "Space"],
+      ["\\quad", "\\quad", "Wide space"],
+      ["\\text{cm}", "\\text{cm}", "cm"],
+      ["\\text{m}", "\\text{m}", "m"],
+      ["\\text{kg}", "\\text{kg}", "kg"],
+      ["\\text{sec}", "\\text{sec}", "sec"],
+    ],
+  },
+};
+
+export default PALETTE;

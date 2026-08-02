@@ -1,3 +1,5 @@
+import { drawMathInHtml } from "../../lib/math";
+
 function PreviewModal({ question, lang, onClose, onToggleLang }) {
   if (!question) return null;
 
@@ -29,7 +31,7 @@ function PreviewModal({ question, lang, onClose, onToggleLang }) {
 
         <div
           dangerouslySetInnerHTML={{
-            __html: question.question?.[lang]
+            __html: drawMathInHtml(question.question?.[lang])
           }}
         />
 
@@ -43,7 +45,7 @@ function PreviewModal({ question, lang, onClose, onToggleLang }) {
               <strong>{opt.key}.</strong>
               <span
                 dangerouslySetInnerHTML={{
-                  __html: opt.text?.[lang]
+                  __html: drawMathInHtml(opt.text?.[lang])
                 }}
               />
             </li>
@@ -58,7 +60,7 @@ function PreviewModal({ question, lang, onClose, onToggleLang }) {
           <strong>Explanation:</strong>
           <div
             dangerouslySetInnerHTML={{
-              __html: question.explanation?.[lang]
+              __html: drawMathInHtml(question.explanation?.[lang])
             }}
           />
         </div>

@@ -1,0 +1,230 @@
+/* ---- editor shell ---- */
+.fx-editor {
+  border: 1px solid #ccc;
+  border-radius: 6px;
+  background: #fff;
+}
+
+.fx-toolbar {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 5px;
+  align-items: center;
+  padding: 6px;
+  border-bottom: 1px solid #ccc;
+}
+
+.fx-btn {
+  font: inherit;
+  font-size: 13px;
+  min-width: 30px;
+  height: 28px;
+  padding: 0 9px;
+  border: 1px solid #ccc;
+  background: #fff;
+  color: #16233b;
+  border-radius: 5px;
+  cursor: pointer;
+  line-height: 1;
+}
+.fx-btn:hover { background: #eaf0ff; border-color: #2f5fd0; }
+.fx-btn:focus-visible { outline: 2px solid #2f5fd0; outline-offset: 1px; }
+
+.fx-primary {
+  background: #2f5fd0;
+  border-color: #2f5fd0;
+  color: #fff;
+  font-weight: 500;
+}
+.fx-primary:hover { filter: brightness(1.08); background: #2f5fd0; }
+
+.fx-divider { width: 1px; height: 18px; background: #ddd; margin: 0 3px; }
+
+.fx-area {
+  padding: 8px;
+  min-height: 120px;
+  line-height: 2;
+  outline: none;
+  font-family: "Segoe UI", "Noto Sans Devanagari", "Nirmala UI", system-ui, sans-serif;
+}
+.fx-area.is-minimal { min-height: 52px; line-height: 1.9; }
+.fx-area:focus { background: #fffefc; }
+
+.fx-area[data-empty="true"]::before {
+  content: attr(data-placeholder);
+  color: #aaa;
+  pointer-events: none;
+}
+
+/* ---- a formula sitting inside the text ---- */
+.fx-chip {
+  display: inline-block;
+  padding: 1px 4px;
+  margin: 0 1px;
+  border: 1px solid #d6e0f8;
+  background: #f4f7ff;
+  border-radius: 5px;
+  cursor: pointer;
+  user-select: none;
+  vertical-align: middle;
+}
+.fx-chip:hover { border-color: #2f5fd0; background: #eaf0ff; }
+
+/* ---- formula builder ---- */
+.fx-overlay {
+  position: fixed;
+  inset: 0;
+  background: rgba(0, 0, 0, 0.45);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  padding: 16px;
+  z-index: 9000; /* above the question modal */
+}
+
+.fx-panel {
+  background: #fff;
+  border-radius: 10px;
+  width: 640px;
+  max-width: 100%;
+  max-height: 92vh;
+  overflow-y: auto;
+  box-shadow: 0 18px 50px rgba(0, 0, 0, 0.25);
+}
+
+.fx-panel-head {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  padding: 10px 14px;
+  border-bottom: 1px solid #e5e2da;
+  font-size: 12px;
+  font-weight: 600;
+  letter-spacing: 0.08em;
+  text-transform: uppercase;
+  color: #5a6478;
+  background: #fbfaf7;
+}
+.fx-x {
+  border: none;
+  background: none;
+  font-size: 15px;
+  cursor: pointer;
+  color: #5a6478;
+  line-height: 1;
+}
+
+.fx-preview {
+  padding: 18px 14px;
+  text-align: center;
+  font-size: 20px;
+  min-height: 64px;
+  overflow-x: auto;
+  background: #fbfaf7;
+  border-bottom: 1px solid #e5e2da;
+}
+.fx-muted { color: #a9afbc; font-size: 13px; }
+.fx-error { color: #b4442e; font-size: 13px; }
+
+.fx-code {
+  width: 100%;
+  border: none;
+  border-bottom: 1px solid #e5e2da;
+  padding: 10px 14px;
+  font-family: ui-monospace, Consolas, monospace;
+  font-size: 13px;
+  min-height: 58px;
+  resize: vertical;
+  outline: none;
+  color: #16233b;
+}
+
+.fx-tabs {
+  display: flex;
+  gap: 2px;
+  overflow-x: auto;
+  padding: 8px 10px 0;
+  border-bottom: 1px solid #e5e2da;
+}
+.fx-tab {
+  font: inherit;
+  font-size: 13px;
+  white-space: nowrap;
+  padding: 6px 11px;
+  border: 1px solid transparent;
+  border-bottom: none;
+  background: none;
+  color: #5a6478;
+  border-radius: 6px 6px 0 0;
+  cursor: pointer;
+}
+.fx-tab:hover { color: #16233b; background: #f6f4ef; }
+.fx-tab.is-on {
+  background: #fff;
+  color: #2f5fd0;
+  font-weight: 600;
+  border-color: #e5e2da;
+  margin-bottom: -1px;
+}
+
+.fx-grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fill, minmax(56px, 1fr));
+  gap: 5px;
+  padding: 12px 10px;
+}
+.fx-sym {
+  height: 44px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  border: 1px solid #e5e2da;
+  background: #fff;
+  border-radius: 7px;
+  cursor: pointer;
+  font-size: 15px;
+  padding: 2px;
+  overflow: hidden;
+}
+.fx-sym:hover { border-color: #2f5fd0; background: #eaf0ff; }
+.fx-sym:focus-visible { outline: 2px solid #2f5fd0; outline-offset: 1px; }
+
+.fx-tip {
+  margin: 0;
+  padding: 0 14px 12px;
+  font-size: 12.5px;
+  color: #5a6478;
+}
+
+.fx-actions {
+  display: flex;
+  gap: 8px;
+  align-items: center;
+  padding: 10px 14px;
+  border-top: 1px solid #e5e2da;
+  background: #fbfaf7;
+  position: sticky;
+  bottom: 0;
+}
+.fx-shortcut { font-size: 12px; color: #a9afbc; margin-left: auto; }
+
+/* Hindi inside a formula falls back to a Devanagari face */
+.katex .brahmic_fallback {
+  font-family: "Noto Sans Devanagari", "Nirmala UI", "Segoe UI", sans-serif;
+}
+
+@media (max-width: 560px) {
+  .fx-grid { grid-template-columns: repeat(auto-fill, minmax(50px, 1fr)); }
+  .fx-shortcut { display: none; }
+}
+
+/* pictures inside the editor */
+.fx-area img {
+  max-width: 100%;
+  max-height: 260px;
+  height: auto;
+  display: block;
+  margin: 6px 0;
+  border-radius: 4px;
+}
+.fx-btn:disabled { opacity: .6; cursor: default; }
