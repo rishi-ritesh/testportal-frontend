@@ -339,7 +339,9 @@ const SECTIONS = [
           "Click Download template (.txt) to get a ready-made example file.",
           "Open that template in Google Docs, Word, or Notepad and copy the pattern for each question.",
           "Start every question with a line like \"### Question 1\", then \"### Question 2\", and so on.",
-          "Under each, fill one line per label: Topic, Question (English), Question (Hindi), the four Options in English and Hindi, Answer, and Explanation in both languages.",
+          "Under each, fill in the labels: Topic, Question (English), Question (Hindi), the four Options in English and Hindi, Answer, and Explanation in both languages.",
+          "A long explanation can run over many lines — press Enter as much as you need. Everything up to the next label is saved, blank lines and all.",
+          "After choosing the file, click \"Check what was read\" to see exactly what will be saved before you upload.",
           "For Answer, just write the correct letter — A, B, C, or D.",
           "For Topic, use the exact topic slug shown on the Topics page.",
           "Save it as a plain text (.txt) file (see the important note below), then choose it and click Upload.",
@@ -363,14 +365,15 @@ const SECTIONS = [
           dos={[
             "Start from the downloaded template and keep the labels exactly as they are.",
             "Begin each question with ### Question 1, ### Question 2, …",
-            "Keep each label and its answer on a single line.",
+            "Write explanations as long as you like — line breaks and blank lines are kept.",
             "Use the exact topic slug shown on the Topics page.",
             "Save as Plain Text (.txt) before uploading.",
           ]}
           donts={[
             "Don't upload a Word .docx or Google Doc directly — download it as plain text (.txt) first.",
             "Don't rename or delete the labels (Topic:, Question (English):, Answer:, …).",
-            "Don't leave any line blank — every field is required.",
+            "Don't start a label in the middle of a line — each label begins its own line.",
+            "Don't leave a whole field empty — every field is required.",
             "Don't put more questions than the subject's remaining slots.",
           ]}
         />

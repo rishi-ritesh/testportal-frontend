@@ -5,6 +5,7 @@ import {
   downloadTemplate,
   FIELD_LABELS
 } from "../../utils/parseQuestionsFile";
+import { drawMathInHtml } from "../../lib/math";
 
 // Modal for uploading many questions into one subject slot of a set at once.
 // `target` = { sectionName, subjectId, subjectName, remaining }.
@@ -15,6 +16,7 @@ function BulkUploadModal({ open, setId, target, onClose, onUploaded }) {
   const [rowErrors, setRowErrors] = useState([]);
   const [confirmMsg, setConfirmMsg] = useState("");
   const [submitting, setSubmitting] = useState(false);
+  const [showPreview, setShowPreview] = useState(false);
 
   if (!open || !target) return null;
 
@@ -25,6 +27,7 @@ function BulkUploadModal({ open, setId, target, onClose, onUploaded }) {
     setRowErrors([]);
     setConfirmMsg("");
     setSubmitting(false);
+    setShowPreview(false);
   };
 
   const close = () => {
@@ -39,6 +42,7 @@ function BulkUploadModal({ open, setId, target, onClose, onUploaded }) {
     setParseError("");
     setRowErrors([]);
     setConfirmMsg("");
+    setShowPreview(false);
 
     if (!file) {
       setFileName("");
@@ -130,6 +134,12 @@ function BulkUploadModal({ open, setId, target, onClose, onUploaded }) {
             {FIELD_LABELS.join(" · ")}
           </code>
 
+          <p style={{ fontSize: "12.5px", color: "#374151", margin: "8px 0 0", lineHeight: 1.6 }}>
+            A long answer can run over <strong>as many lines as you like</strong> — press Enter
+            freely inside an explanation or a question. Everything up to the next label is kept,
+            with your line breaks and blank lines intact. Only start the next label on a fresh line.
+          </p>
+
           <p style={{ fontSize: "12px", color: "#92400e", background: "#fffbeb", border: "1px solid #fde68a", borderRadius: "6px", padding: "8px 10px", margin: "10px 0 0", lineHeight: 1.6 }}>
             <strong>Important:</strong> after typing in Google Docs or Word, save it as{" "}
             <strong>Plain Text (.txt)</strong> before uploading —
@@ -144,10 +154,44 @@ function BulkUploadModal({ open, setId, target, onClose, onUploaded }) {
           {fileName && !parseError && questions.length > 0 && (
             <p style={{ fontSize: "13px", color: "#065f46", marginTop: "8px" }}>
               Parsed <strong>{questions.length}</strong> question(s) from{" "}
-              <em>{fileName}</em>.
+              <em>{fileName}</em>.{" "}
+              <button
+                type="button"
+                onClick={() => setShowPreview((v) => !v)}
+                style={linkBtn}
+              >
+                {showPreview ? "Hide" : "Check what was read"}
+              </button>
             </p>
           )}
         </div>
+
+        {/* What the file actually produced — check this before uploading */}
+        {showPreview && questions.length > 0 && (
+          <div style={previewBox}>
+            <p style={{ margin: "0 0 10px", fontSize: "12.5px", color: "#6b7280" }}>
+              This is exactly what will be saved. If a line is missing here, it is missing in
+              the file too — fix it and choose the file again.
+            </p>
+            {questions.map((q, i) => (
+              <div key={i} style={previewCard}>
+                <div style={{ fontSize: "12px", color: "#6b7280", marginBottom: "4px" }}>
+                  Question {i + 1} · topic <code>{q.topic_slug || "—"}</code> · answer{" "}
+                  <strong>{q.answer || "—"}</strong>
+                </div>
+                {PREVIEW_FIELDS.map(([key, label]) => (
+                  <div key={key} style={{ marginTop: "6px" }}>
+                    <span style={previewLabel}>{label}</span>
+                    <div
+                      style={previewValue}
+                      dangerouslySetInnerHTML={{ __html: drawMathInHtml(q[key]) || "—" }}
+                    />
+                  </div>
+                ))}
+              </div>
+            ))}
+          </div>
+        )}
 
         {/* Capacity warning */}
         {questions.length > 0 && overCapacity && (
@@ -205,6 +249,23 @@ function BulkUploadModal({ open, setId, target, onClose, onUploaded }) {
   );
 }
 
+// The rich-text fields worth eyeballing before upload — the two that most often
+// get cut short are the explanations, so they go last where they read easily.
+const PREVIEW_FIELDS = [
+  ["question_en", "Question (English)"],
+  ["question_hi", "Question (Hindi)"],
+  ["option_a_en", "Option A (English)"],
+  ["option_b_en", "Option B (English)"],
+  ["option_c_en", "Option C (English)"],
+  ["option_d_en", "Option D (English)"],
+  ["option_a_hi", "Option A (Hindi)"],
+  ["option_b_hi", "Option B (Hindi)"],
+  ["option_c_hi", "Option C (Hindi)"],
+  ["option_d_hi", "Option D (Hindi)"],
+  ["explanation_en", "Explanation (English)"],
+  ["explanation_hi", "Explanation (Hindi)"]
+];
+
 const overlay = {
   position: "fixed",
   inset: 0,
@@ -230,6 +291,49 @@ const helpBox = {
   border: "1px solid #e5e7eb",
   borderRadius: "8px",
   background: "#f9fafb"
+};
+
+const previewBox = {
+  marginTop: "12px",
+  padding: "12px 14px",
+  border: "1px solid #e5e7eb",
+  borderRadius: "8px",
+  background: "#f9fafb",
+  maxHeight: "320px",
+  overflowY: "auto"
+};
+
+const previewCard = {
+  padding: "10px 12px",
+  marginBottom: "10px",
+  background: "white",
+  border: "1px solid #e5e7eb",
+  borderRadius: "6px"
+};
+
+const previewLabel = {
+  display: "block",
+  fontSize: "11px",
+  textTransform: "uppercase",
+  letterSpacing: "0.03em",
+  color: "#9ca3af"
+};
+
+const previewValue = {
+  fontSize: "13px",
+  color: "#111827",
+  lineHeight: 1.6,
+  wordBreak: "break-word"
+};
+
+const linkBtn = {
+  background: "none",
+  border: "none",
+  padding: 0,
+  color: "#2563eb",
+  cursor: "pointer",
+  fontSize: "13px",
+  textDecoration: "underline"
 };
 
 const errBox = {

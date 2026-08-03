@@ -15,6 +15,10 @@
 //   Answer: B
 //   Explanation (English): Because 2 + 2 = 4.
 //   Explanation (Hindi): क्योंकि 2 + 2 = 4 होता है।
+//
+// A value may run over as many lines as it needs — everything after a label,
+// up to the next label, belongs to that label. So a long explanation typed with
+// Enter, Tab and blank lines in Word keeps all of its lines and its layout.
 
 const MAX_FILE_BYTES = 5 * 1024 * 1024; // 5 MB
 
@@ -35,6 +39,10 @@ const FIELD_KEYS = [
   "explanation_en",
   "explanation_hi"
 ];
+
+// These two are short codes, not question text: they stay one plain line and are
+// never turned into HTML. Everything else is rich text shown to students.
+const PLAIN_FIELDS = new Set(["topic_slug", "answer"]);
 
 // Maps a normalized label (lowercase, letters only) → internal key. Several
 // spellings map to the same key so small differences don't break the upload.
@@ -77,6 +85,55 @@ const LABEL_MAP = {
 
 const normalizeLabel = (s) => s.toLowerCase().replace(/[^a-z]/g, "");
 
+// Own-property lookup only, so ordinary words like "constructor" or "toString"
+// appearing in a question can never be mistaken for a label.
+const lookupLabel = (normalized) =>
+  Object.prototype.hasOwnProperty.call(LABEL_MAP, normalized)
+    ? LABEL_MAP[normalized]
+    : null;
+
+// Same rule the backend uses to build subject/topic slugs, so "Coding Decoding"
+// or "Simplification" in the file still finds the topic.
+const slugify = (s) =>
+  String(s || "")
+    .trim()
+    .toLowerCase()
+    .replace(/[^a-z0-9]+/g, "-")
+    .replace(/^-+|-+$/g, "");
+
+// Word, Google Docs and TextEdit all sneak invisible characters into a "plain
+// text" export. Fold them all down to plain lines and plain spaces first, so the
+// rest of the parser only ever sees "\n" and normal spaces.
+function normalizeText(text) {
+  return String(text)
+    .replace(/\r\n?/g, "\n") // Windows / classic-Mac line endings
+    .replace(/[\u2028\u2029]/g, "\n") // Word line/paragraph separators
+    .replace(/\t/g, " ") // tabs used for indentation
+    .replace(/[\u00A0\u2007\u202F]/g, " ") // non-breaking spaces
+    .replace(/[\u200B-\u200D\uFEFF]/g, ""); // BOM + zero-width joiners
+}
+
+const escapeHtml = (s) =>
+  s.replace(/&/g, "&amp;").replace(/</g, "&lt;").replace(/>/g, "&gt;");
+
+// Turns the lines collected under one label into the HTML the app stores.
+// Blank lines become blank lines, every Enter becomes a line break, and any
+// <, > or & the admin typed shows up literally instead of breaking the page.
+// Formulas written between dollar signs pass through untouched.
+function linesToHtml(lines) {
+  const trimmed = lines.map((l) => l.trim());
+
+  while (trimmed.length && trimmed[0] === "") trimmed.shift();
+  while (trimmed.length && trimmed[trimmed.length - 1] === "") trimmed.pop();
+
+  // a run of empty lines reads as one blank line
+  const kept = trimmed.filter((l, i) => l !== "" || trimmed[i - 1] !== "");
+
+  return kept.map(escapeHtml).join("<br>");
+}
+
+const firstLine = (lines) => (lines.find((l) => l.trim() !== "") || "").trim();
+
 // Pull a single option letter out of whatever the user typed, e.g. "B", "b)",
 // "Option B", "b - correct" all become "B". Stored uppercase to match how
 // questions created through the normal form are stored.
@@ -86,33 +143,74 @@ function normalizeAnswer(raw) {
   return (m ? m[1] : cleaned.trim()).toUpperCase();
 }
 
+// A line that starts a new question, e.g. "### Question 1" or a bare
+// "Question 1" / "Q2." typed without the hashes.
+function isHeaderLine(line) {
+  const s = line.trim();
+  if (!s) return false;
+  if (/^#{2,}/.test(s)) return true;
+  return /^(?:question|q)\s*(?:no\.?|number)?\s*[-–—.:)]?\s*\d+\s*[-–—.:)]*$/i.test(s);
+}
+
+// Returns the field this line starts, or null if it is a continuation line.
+// A label may carry its value inline ("Answer: B") or sit on its own line with
+// the value underneath.
+function labelOnLine(line) {
+  const idx = line.indexOf(":");
+  if (idx !== -1) {
+    const key = lookupLabel(normalizeLabel(line.slice(0, idx)));
+    if (key) return key;
+  }
+  return lookupLabel(normalizeLabel(line));
+}
+
 function blockToQuestion(lines) {
-  const out = {};
-  FIELD_KEYS.forEach((k) => (out[k] = ""));
+  const collected = {}; // internal key -> the lines belonging to it
+  let currentKey = null;
 
   for (const line of lines) {
-    const idx = line.indexOf(":");
-    if (idx === -1) continue; // ignore stray lines without a label
-    const key = LABEL_MAP[normalizeLabel(line.slice(0, idx))];
-    if (key) out[key] = line.slice(idx + 1).trim();
+    const key = labelOnLine(line);
+
+    // A label already seen in this question is treated as ordinary text — that
+    // way a word like "Answer:" inside an explanation stays in the explanation
+    // instead of silently overwriting the real answer.
+    if (key && !collected[key]) {
+      const idx = line.indexOf(":");
+      collected[key] = [idx === -1 ? "" : line.slice(idx + 1)];
+      currentKey = key;
+      continue;
+    }
+
+    // Anything before the first label (stray notes under the header) is dropped.
+    if (currentKey) collected[currentKey].push(line);
   }
 
+  const out = {};
+  FIELD_KEYS.forEach((k) => {
+    const value = collected[k];
+    if (!value) {
+      out[k] = "";
+      return;
+    }
+    out[k] = PLAIN_FIELDS.has(k) ? firstLine(value) : linesToHtml(value);
+  });
+
+  out.topic_slug = slugify(out.topic_slug);
   out.answer = normalizeAnswer(out.answer);
   return out;
 }
 
 export function parseDocQuestions(text) {
-  if (text.charCodeAt(0) === 0xfeff) text = text.slice(1); // strip BOM
-  const lines = text.split(/\r?\n/);
+  const lines = normalizeText(text).split("\n");
 
-  // Split into blocks: a line starting with "##" (e.g. "### Question 1") begins
-  // a new question. Content before the first header still counts as a block so
-  // a file without headers isn't silently dropped.
+  // Split into blocks: a header line begins a new question. Content before the
+  // first header still counts as a block so a file without headers isn't
+  // silently dropped.
   const blocks = [];
   let current = null;
 
   for (const line of lines) {
-    if (/^\s*#{2,}/.test(line)) {
+    if (isHeaderLine(line)) {
       if (current) blocks.push(current);
       current = [];
       continue;
@@ -169,11 +267,12 @@ export function readQuestionsFile(file) {
       if (!text.trim()) return resolve({ error: "The file is empty." });
       resolve(parseDocQuestions(text));
     };
-    reader.readAsText(file);
+    reader.readAsText(file, "utf-8");
   });
 }
 
-// A ready-to-fill template with two example questions.
+// A ready-to-fill template with two example questions. The second one shows a
+// multi-line explanation, since that is the most common thing people need.
 export const TEMPLATE_TXT = `### Question 1
 Topic: algebra
 Question (English): What is 2 + 2?
@@ -192,19 +291,37 @@ Explanation (Hindi): क्योंकि 2 + 2 = 4 होता है।
 
 ### Question 2
 Topic: algebra
-Question (English): What is 5 - 3?
-Question (Hindi): 5 - 3 कितना है?
-Option A (English): 1
-Option A (Hindi): १
-Option B (English): 2
-Option B (Hindi): २
-Option C (English): 3
-Option C (Hindi): ३
-Option D (English): 4
-Option D (Hindi): ४
+Question (English): What number should be subtracted from (23/40 + 13/20 - 7/10) to get 3/8?
+Question (Hindi): (23/40 + 13/20 - 7/10) में से कौन-सी संख्या घटाई जाए कि परिणाम 3/8 प्राप्त हो?
+Option A (English): 17/20
+Option A (Hindi): 17/20
+Option B (English): 3/20
+Option B (Hindi): 3/20
+Option C (English): 19/40
+Option C (Hindi): 19/40
+Option D (English): 6/20
+Option D (Hindi): 6/20
 Answer: B
-Explanation (English): 5 - 3 = 2.
-Explanation (Hindi): 5 - 3 = 2 होता है।
+Explanation (English): According to the question,
+
+23/40 + 13/20 - 7/10 = 21/40
+
+Let the required number be x.
+
+21/40 - x = 3/8
+x = 21/40 - 3/8 = 21/40 - 15/40 = 6/40 = 3/20
+
+Therefore, the correct answer is 3/20.
+Explanation (Hindi): प्रश्न के अनुसार,
+
+23/40 + 13/20 - 7/10 = 21/40
+
+मान लीजिए घटाई जाने वाली संख्या x है।
+
+21/40 - x = 3/8
+x = 21/40 - 3/8 = 21/40 - 15/40 = 6/40 = 3/20
+
+अतः सही उत्तर 3/20 है।
 `;
 
 // Human-readable list of the labels each question needs (shown in the modal).

@@ -1,3 +1,12 @@
+// Stored question text is HTML. For the one-line list summary we want the plain
+// words: drop the tags and turn entities like &amp; or &nbsp; back into the
+// characters the admin actually typed.
+const toSummary = (html) => {
+  const holder = document.createElement("div");
+  holder.innerHTML = String(html || "").replace(/<br\s*\/?>/gi, " ");
+  return (holder.textContent || "").replace(/\s+/g, " ").trim();
+};
+
 function SubjectCard({
   subject,
   sectionName,
@@ -62,9 +71,10 @@ function SubjectCard({
                 {q.questionId?.questionCode}
               </strong>
               {" — "}
-              {q.questionId?.question?.en
-                ?.replace(/<[^>]*>/g, "")  // remove HTML
-                ?.slice(0, 80)}...
+              {(() => {
+                const text = toSummary(q.questionId?.question?.en);
+                return text.length > 80 ? `${text.slice(0, 80)}...` : text;
+              })()}
             </span>
 
             <div style={{ display: "flex", gap: "6px" }}>
