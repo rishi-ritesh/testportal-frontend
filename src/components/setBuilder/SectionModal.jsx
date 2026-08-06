@@ -1,5 +1,9 @@
-function SectionModal({ open, form, setForm, onClose, onSave }) {
+// Used for both "Add Section" and "Edit Section" — the fields are identical,
+// only the heading and button label change.
+function SectionModal({ open, form, setForm, onClose, onSave, mode = "add" }) {
   if (!open) return null;
+
+  const isEdit = mode === "edit";
 
   return (
     <div
@@ -21,7 +25,9 @@ function SectionModal({ open, form, setForm, onClose, onSave }) {
           borderRadius: "8px"
         }}
       >
-        <h2 style={{ marginBottom: "15px" }}>Add Section</h2>
+        <h2 style={{ marginBottom: "15px" }}>
+          {isEdit ? "Edit Section" : "Add Section"}
+        </h2>
 
         {/* Name */}
         <input
@@ -90,7 +96,7 @@ function SectionModal({ open, form, setForm, onClose, onSave }) {
               borderRadius: "4px"
             }}
           >
-            Save
+            {isEdit ? "Save Changes" : "Save"}
           </button>
         </div>
       </div>

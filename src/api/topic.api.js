@@ -6,5 +6,8 @@ export const getTopicsBySubject = (subjectId) =>
 export const createTopic = (data) =>
   API.post("/api/admin/topic", data);
 
+export const updateTopic = (id, data) =>
+  API.patch(`/api/admin/topic/${id}`, data);
+
 export const deleteTopic = (id) =>
   API.delete(`/api/admin/topic/${id}`);

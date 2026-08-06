@@ -1,3 +1,5 @@
+import ReorderButtons from "./ReorderButtons";
+
 // Stored question text is HTML. For the one-line list summary we want the plain
 // words: drop the tags and turn entities like &amp; or &nbsp; back into the
 // characters the admin actually typed.
@@ -10,11 +12,18 @@ const toSummary = (html) => {
 function SubjectCard({
   subject,
   sectionName,
+  index,
+  total,
   onPreview,
   onRemove,
   onAddQuestion,
   onEdit,
   onBulkUpload,
+  onEditSubject,
+  onRemoveSubject,
+  onMoveSubject,
+  onMoveQuestion,
+  reordering,
   removing,
   locked
 }) {
@@ -33,7 +42,58 @@ function SubjectCard({
         background: limitReached ? "#ffe5e5" : "white"
       }}
     >
-      <h3>{subject.subjectId?.name}</h3>
+      <div
+        style={{
+          display: "flex",
+          justifyContent: "space-between",
+          alignItems: "flex-start",
+          gap: "10px"
+        }}
+      >
+        <h3 style={{ margin: 0 }}>{subject.subjectId?.name}</h3>
+
+        {!locked && (
+          <div style={{ display: "flex", gap: "6px", alignItems: "center" }}>
+            <ReorderButtons
+              index={index}
+              total={total}
+              onMove={onMoveSubject}
+              disabled={reordering}
+              label="subject"
+            />
+
+            <button
+              onClick={onEditSubject}
+              title="Change the subject or its question limit"
+              style={{
+                background: "#10b981",
+                color: "white",
+                border: "none",
+                padding: "4px 10px",
+                borderRadius: "4px",
+                cursor: "pointer"
+              }}
+            >
+              Edit
+            </button>
+
+            <button
+              onClick={onRemoveSubject}
+              title="Remove this subject from the section"
+              style={{
+                background: "#ef4444",
+                color: "white",
+                border: "none",
+                padding: "4px 10px",
+                borderRadius: "4px",
+                cursor: "pointer"
+              }}
+            >
+              Remove
+            </button>
+          </div>
+        )}
+      </div>
 
       <p>
         Questions: {currentCount}
@@ -48,9 +108,9 @@ function SubjectCard({
 
       {/* Question List */}
       <ul style={{ paddingLeft: "20px" }}>
-        {subject.questions?.map((q, index) => (
+        {subject.questions?.map((q, questionIndex) => (
           <li
-            key={q.questionId?._id || index}
+            key={q.questionId?._id || questionIndex}
             style={{
               display: "flex",
               justifyContent: "space-between",
@@ -58,14 +118,6 @@ function SubjectCard({
               marginBottom: "6px"
             }}
           >
-            {/* <span style={{ flex: 1 }}>
-              <strong style={{ color: "#2563eb" }}>
-                {q.questionId?.questionCode}
-              </strong>
-              {" — "}
-              {q.questionId?.question?.en}
-            </span> */}
-
             <span style={{ flex: 1 }}>
               <strong style={{ color: "#2563eb" }}>
                 {q.questionId?.questionCode}
@@ -77,7 +129,17 @@ function SubjectCard({
               })()}
             </span>
 
-            <div style={{ display: "flex", gap: "6px" }}>
+            <div style={{ display: "flex", gap: "6px", alignItems: "center" }}>
+              {!locked && (
+                <ReorderButtons
+                  index={questionIndex}
+                  total={currentCount}
+                  onMove={onMoveQuestion}
+                  disabled={reordering}
+                  label="question"
+                />
+              )}
+
               <button
                 onClick={() => onPreview(q.questionId)}
                 style={{

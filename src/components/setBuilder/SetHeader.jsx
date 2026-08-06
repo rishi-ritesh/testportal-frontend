@@ -1,6 +1,7 @@
 function SetHeader({
   title,
   onAddSection,
+  onRename,
   onTogglePublish,
   loading,
   isPublished,
@@ -20,7 +21,28 @@ function SetHeader({
     >
       {/* Left */}
       <div>
-        <h1 style={{ margin: 0 }}>{title}</h1>
+        <div style={{ display: "flex", alignItems: "center", gap: "10px" }}>
+          <h1 style={{ margin: 0 }}>{title}</h1>
+
+          {!locked && (
+            <button
+              onClick={onRename}
+              title="Rename this set"
+              style={{
+                background: "transparent",
+                border: "1px solid #d1d5db",
+                borderRadius: "4px",
+                padding: "2px 8px",
+                fontSize: "13px",
+                color: "#4b5563",
+                cursor: "pointer"
+              }}
+            >
+              Rename
+            </button>
+          )}
+        </div>
+
         <p style={{ margin: 0, color: "#6b7280", fontSize: "14px" }}>
           Manage sections and questions
         </p>

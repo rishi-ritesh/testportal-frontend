@@ -4,6 +4,9 @@ export const getSubjects = () => API.get("api/admin/subjects");
 
 export const createSubject = (data) => API.post("api/admin/subject", data);
 
+export const updateSubject = (id, data) =>
+  API.patch(`/api/admin/subject/${id}`, data);
+
 // export const deleteSubject = (id) => API.delete(`/subjects/${id}`);
 
 export const deleteSubject = (id, cascade) =>
