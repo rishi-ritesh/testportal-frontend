@@ -9,8 +9,10 @@ import {
   removeSetFromPackage
 } from "../api/package.api";
 
-// student portal runs on its pinned dev port (see vite.config.js)
-const STUDENT_PORTAL_URL = "http://localhost:5173";
+// Set VITE_STUDENT_PORTAL_URL for a deployed build. The fallback is the
+// student portal's pinned dev port (see vite.config.js).
+const STUDENT_PORTAL_URL =
+  import.meta.env.VITE_STUDENT_PORTAL_URL || "http://localhost:5173";
 
 function PackageBuilder() {
   const { id } = useParams();
