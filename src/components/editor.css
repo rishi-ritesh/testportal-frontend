@@ -213,6 +213,15 @@
   font-family: "Noto Sans Devanagari", "Nirmala UI", "Segoe UI", sans-serif;
 }
 
+/* Powers and indices read as half the size of the number they sit on.
+   KaTeX ships them at 0.7em, which is too close to the base size here.
+   Scoped to .msupsub on purpose: the same size class is also used for the
+   top and bottom of an ordinary fraction, and those must not shrink. */
+.katex .msupsub .katex-sizing.reset-size6.size3,
+.katex .msupsub .sizing.reset-size6.size3 {
+  font-size: 0.5em;
+}
+
 @media (max-width: 560px) {
   .fx-grid { grid-template-columns: repeat(auto-fill, minmax(50px, 1fr)); }
   .fx-shortcut { display: none; }
