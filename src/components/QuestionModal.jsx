@@ -453,6 +453,7 @@ function QuestionModal({
     <>
       <div
         key={editQuestion?._id || "create"}
+        className="fx-shrink"
         style={{
           background: "white",
           width: "95vw",

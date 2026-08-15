@@ -14,14 +14,18 @@ export default function FormulaBuilder({ initialCode = "", onInsert, onClose }) 
     return () => clearTimeout(t);
   }, []);
 
+  // Tell the page a side panel is docked so it can make room for it.
   useEffect(() => {
-    const onKey = (e) => {
-      if (e.key === "Escape") onClose();
-      if (e.key === "Enter" && (e.ctrlKey || e.metaKey)) submit();
-    };
-    window.addEventListener("keydown", onKey);
-    return () => window.removeEventListener("keydown", onKey);
-  });
+    document.body.classList.add("fx-side-open");
+    return () => document.body.classList.remove("fx-side-open");
+  }, []);
+
+  // Only while the panel itself has focus — the question behind it stays
+  // editable, so we must not swallow its keys.
+  const onKey = (e) => {
+    if (e.key === "Escape") onClose();
+    if (e.key === "Enter" && (e.ctrlKey || e.metaKey)) submit();
+  };
 
   const submit = () => {
     const trimmed = code.trim();
@@ -59,36 +63,36 @@ export default function FormulaBuilder({ initialCode = "", onInsert, onClose }) 
   const set = PALETTE[tab];
 
   return (
-    <div className="fx-overlay" onMouseDown={(e) => e.target === e.currentTarget && onClose()}>
-      <div className="fx-panel" onMouseDown={(e) => e.stopPropagation()}>
-        <div className="fx-panel-head">
-          <span>{initialCode ? "Edit formula" : "Insert formula"}</span>
-          <button type="button" className="fx-x" onClick={onClose} aria-label="Close">
-            ✕
-          </button>
-        </div>
+    <aside className="fx-side" aria-label="Formula builder" onKeyDown={onKey}>
+      <div className="fx-panel-head">
+        <span>{initialCode ? "Edit formula" : "Insert formula"}</span>
+        <button type="button" className="fx-x" onClick={onClose} aria-label="Close">
+          ✕
+        </button>
+      </div>
 
-        <div className="fx-preview">
-          {!code.trim() ? (
-            <span className="fx-muted">Pick symbols below — the formula appears here</span>
-          ) : drawn ? (
-            <span dangerouslySetInnerHTML={{ __html: drawn }} />
-          ) : (
-            <span className="fx-error">
-              Not finished yet — check for an empty or unclosed &#123; &#125; bracket.
-            </span>
-          )}
-        </div>
+      <div className="fx-preview">
+        {!code.trim() ? (
+          <span className="fx-muted">Pick symbols below — the formula appears here</span>
+        ) : drawn ? (
+          <span dangerouslySetInnerHTML={{ __html: drawn }} />
+        ) : (
+          <span className="fx-error">
+            Not finished yet — check for an empty or unclosed &#123; &#125; bracket.
+          </span>
+        )}
+      </div>
 
-        <textarea
-          ref={boxRef}
-          className="fx-code"
-          value={code}
-          spellCheck={false}
-          onChange={(e) => setCode(e.target.value)}
-          aria-label="Formula code"
-        />
+      <textarea
+        ref={boxRef}
+        className="fx-code"
+        value={code}
+        spellCheck={false}
+        onChange={(e) => setCode(e.target.value)}
+        aria-label="Formula code"
+      />
 
+      <div className="fx-side-body">
         <div className="fx-tabs" role="tablist">
           {TAB_NAMES.map((name) => (
             <button
@@ -127,20 +131,20 @@ export default function FormulaBuilder({ initialCode = "", onInsert, onClose }) 
         </div>
 
         <p className="fx-tip">{set.tip}</p>
-
-        <div className="fx-actions">
-          <button type="button" className="fx-btn fx-primary" onClick={submit}>
-            {initialCode ? "Save formula" : "Add to question"}
-          </button>
-          <button type="button" className="fx-btn" onClick={onClose}>
-            Cancel
-          </button>
-          <button type="button" className="fx-btn" onClick={() => setCode("")}>
-            Clear
-          </button>
-          <span className="fx-shortcut">Ctrl + Enter to add</span>
-        </div>
       </div>
-    </div>
+
+      <div className="fx-actions">
+        <button type="button" className="fx-btn fx-primary" onClick={submit}>
+          {initialCode ? "Save formula" : "Add to question"}
+        </button>
+        <button type="button" className="fx-btn" onClick={onClose}>
+          Cancel
+        </button>
+        <button type="button" className="fx-btn" onClick={() => setCode("")}>
+          Clear
+        </button>
+        <span className="fx-shortcut">Ctrl + Enter to add</span>
+      </div>
+    </aside>
   );
 }

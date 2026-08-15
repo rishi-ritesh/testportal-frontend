@@ -11,7 +11,7 @@ function QuestionSelectorModal({
   if (!open || !selectedSubject) return null;
 
   return (
-    <div style={{
+    <div className="fx-host" style={{
       position: "fixed",
       inset: 0,
       background: "rgba(0,0,0,0.5)",
@@ -20,7 +20,7 @@ function QuestionSelectorModal({
       alignItems: "center",
       zIndex: 1000
     }}>
-      <div style={{
+      <div className="fx-shrink" style={{
         background: "white",
         padding: "20px",
         width: "95vw",

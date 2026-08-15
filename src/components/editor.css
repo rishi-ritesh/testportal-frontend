@@ -70,26 +70,50 @@
 }
 .fx-chip:hover { border-color: #2f5fd0; background: #eaf0ff; }
 
-/* ---- formula builder ---- */
-.fx-overlay {
+/* the editor whose formula is being written right now */
+.fx-editor.is-editing {
+  border-color: #2f5fd0;
+  box-shadow: 0 0 0 2px rgba(47, 95, 208, 0.18);
+}
+
+/* ---- formula builder: docked to the side, never on top of the question ---- */
+:root {
+  --fx-side-w: 400px; /* width taken by the panel on the right */
+  --fx-side-h: 0px; /* height taken by the panel at the bottom */
+}
+
+.fx-side {
   position: fixed;
-  inset: 0;
-  background: rgba(0, 0, 0, 0.45);
+  top: 0;
+  right: 0;
+  bottom: 0;
+  width: var(--fx-side-w);
   display: flex;
-  align-items: center;
-  justify-content: center;
-  padding: 16px;
+  flex-direction: column;
+  background: #fff;
+  border-left: 1px solid #e5e2da;
+  box-shadow: -12px 0 34px rgba(0, 0, 0, 0.18);
   z-index: 9000; /* above the question modal */
 }
 
-.fx-panel {
-  background: #fff;
-  border-radius: 10px;
-  width: 640px;
-  max-width: 100%;
-  max-height: 92vh;
+/* the part that scrolls — head, preview, code and actions stay put */
+.fx-side-body {
+  flex: 1;
   overflow-y: auto;
-  box-shadow: 0 18px 50px rgba(0, 0, 0, 0.25);
+  min-height: 0;
+}
+
+/* While the panel is docked, whatever is holding the question gives up
+   exactly as much room as the panel takes, so nothing is hidden.
+   !important because those boxes carry inline widths. */
+body.fx-side-open .fx-host {
+  box-sizing: border-box;
+  padding-right: var(--fx-side-w) !important;
+  padding-bottom: var(--fx-side-h) !important;
+}
+body.fx-side-open .fx-shrink {
+  width: calc(95vw - var(--fx-side-w)) !important;
+  height: calc(95vh - var(--fx-side-h)) !important;
 }
 
 .fx-panel-head {
@@ -198,13 +222,12 @@
 
 .fx-actions {
   display: flex;
+  flex-wrap: wrap;
   gap: 8px;
   align-items: center;
   padding: 10px 14px;
   border-top: 1px solid #e5e2da;
   background: #fbfaf7;
-  position: sticky;
-  bottom: 0;
 }
 .fx-shortcut { font-size: 12px; color: #a9afbc; margin-left: auto; }
 
@@ -220,6 +243,26 @@
 .katex .msupsub .katex-sizing.reset-size6.size3,
 .katex .msupsub .sizing.reset-size6.size3 {
   font-size: 0.5em;
+}
+
+/* Too narrow to sit beside the question — dock along the bottom instead,
+   which keeps the question readable above it. */
+@media (max-width: 900px) {
+  :root {
+    --fx-side-w: 0px;
+    --fx-side-h: 54vh;
+  }
+  .fx-side {
+    top: auto;
+    left: 0;
+    width: auto;
+    height: var(--fx-side-h);
+    border-left: none;
+    border-top: 1px solid #e5e2da;
+    box-shadow: 0 -12px 34px rgba(0, 0, 0, 0.18);
+  }
+  .fx-preview { padding: 12px 14px; min-height: 52px; }
+  .fx-code { min-height: 44px; }
 }
 
 @media (max-width: 560px) {

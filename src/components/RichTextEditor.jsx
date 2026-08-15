@@ -1,4 +1,4 @@
-import { useEffect, useRef, useState, useCallback } from "react";
+import { useEffect, useRef, useState, useCallback, useId } from "react";
 import FormulaBuilder from "./FormulaBuilder";
 import { loadIntoEditor, readFromEditor, makeFormulaChip } from "../lib/math";
 import API from "../api/axios";
@@ -13,6 +13,7 @@ export default function RichTextEditor({
   minimal = false,
   placeholder = "Type here…",
 }) {
+  const boxId = useId();
   const areaRef = useRef(null);
   const lastSent = useRef(null); // what we last handed to onChange
   const savedRange = useRef(null); // where the cursor was before the panel opened
@@ -68,10 +69,31 @@ export default function RichTextEditor({
   };
 
   // ---- opening the formula panel ----
+  // Only one panel may be docked at a time — the others step aside.
   const openBuilder = (chip = null) => {
     rememberCursor();
+    window.dispatchEvent(new CustomEvent("fx-builder-open", { detail: boxId }));
     setBuilder({ code: chip ? chip.dataset.latex : "", chip });
   };
+
+  useEffect(() => {
+    const onOther = (e) => {
+      if (e.detail !== boxId) setBuilder(null);
+    };
+    window.addEventListener("fx-builder-open", onOther);
+    return () => window.removeEventListener("fx-builder-open", onOther);
+  }, [boxId]);
+
+  // The panel is docked at the side, so the page reflows into the space left
+  // over. Bring this box back into view once that has happened.
+  useEffect(() => {
+    if (!builder) return;
+    const t = setTimeout(
+      () => areaRef.current?.scrollIntoView({ block: "nearest", behavior: "smooth" }),
+      80
+    );
+    return () => clearTimeout(t);
+  }, [builder]);
 
   const handleAreaClick = (e) => {
     const chip = e.target.closest?.(".fx-chip");
@@ -160,7 +182,7 @@ export default function RichTextEditor({
 
   return (
     <>
-      <div className="fx-editor">
+      <div className={"fx-editor" + (builder ? " is-editing" : "")}>
         <div className="fx-toolbar">
           <button type="button" className="fx-btn" title="Bold" onClick={() => runCommand("bold")}>
             <b>B</b>
